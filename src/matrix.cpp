@@ -3,7 +3,10 @@
 Matrix::Matrix(const unsigned rows, const unsigned columns) {
     matrix.resize(rows);
     for (auto& row : matrix) {
-        matrix.resize(columns);
+        row.resize(columns);
+        for (auto& el : row) {
+            el = rng.generate();
+        }
     }
 }
 
@@ -78,12 +81,16 @@ const std::vector<double> Matrix::getColumn(const unsigned column) const {
     return result;
 }
 
-Matrix Matrix::operator=(const std::vector< std::vector<double> > m) {
-    this->matrix = m;
-    return *this;
+std::vector<double> Matrix::computeRow(const std::vector<double> row, const Matrix& m) const {
+    std::vector<double> new_row;
+    for (unsigned i = 0; i < m.columns(); ++i) {
+        new_row.push_back(addendum::dotProduct(row, m.getColumn(i)));
+    }
+    return new_row;
 }
 
-Matrix Matrix::operator*(const Matrix& m) {
+Matrix Matrix::multiply_single_thread(const Matrix& m) {
+    auto start = std::chrono::system_clock::now();
     std::vector < std::vector<double> > result;
     if (this->columns() != m.rows()) {
         std::cout << "\tMatrix::operator* /// ok so there's this thing about matrixes,\n\t" <<
@@ -100,6 +107,40 @@ Matrix Matrix::operator*(const Matrix& m) {
         result.push_back(new_row);
     }
 
+    auto end = std::chrono::system_clock::now();
+    std::cout << "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start) << "\n";
+    return Matrix(result);
+}
+
+Matrix Matrix::multiply_multi_thread(const Matrix& m) {
+    return *this * m;
+}
+
+Matrix Matrix::operator*(const Matrix& m) {
+    auto start = std::chrono::system_clock::now();
+    std::vector < std::vector<double> > result;
+    if (this->columns() != m.rows()) {
+        std::cout << "\tMatrix::operator* /// ok so there's this thing about matrixes,\n\t" <<
+            "regarding their dimensions and dimensions of the result, MxN x NxP = MxP\n\t" <<
+            "this uh. this is not the case here, chief. returning an empty matrix.\n";
+        return Matrix(result);
+    }
+
+    for (auto& row : this->matrix) {
+        /*
+        futures.push_back(std::async(std::launch::async, [this, row, &m]() {
+            return this->computeRow(row, m);
+        }));
+        */
+       futures.push_back(std::async(std::launch::async, &Matrix::computeRow, this, std::ref(row), std::ref(m)));
+    }
+
+    for (auto& future : futures) {
+        result.push_back(future.get());
+    }
+
+    auto end = std::chrono::system_clock::now();
+    std::cout << "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start) << "\n";
     return Matrix(result);
 }
 
