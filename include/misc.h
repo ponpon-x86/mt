@@ -109,4 +109,30 @@ namespace common {
             // and pray to the higher powers that this works
         }
     }
+
+    template<typename T>
+    inline std::vector<T> merge(std::vector<T> a1, std::vector<T> a2) {
+        unsigned i = 0, j = 0, k = 0;
+        unsigned a1_size = a1.size();
+        unsigned a2_size = a2.size();
+        std::vector<T> result(a1_size + a2_size);
+        while (i < a1_size && j < a2_size) {
+            if (a1[i] < a2[j]) 
+                result[k++] = a1[i++];
+            else
+                result[k++] = a2[j++];
+        }
+
+        // so at this point the arrays are mostly merged,
+        // however, in case one of the arrays was larger,
+
+        while (i < a1_size) {
+            result[k++] = a1[i++];
+        }
+        while (j < a2_size) {
+            result[k++] = a2[j++];
+        }
+
+        return result;
+    }
 }

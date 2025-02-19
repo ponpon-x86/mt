@@ -1,7 +1,9 @@
+#include <execution>
 #include <algorithm>
 #include <vector>
 
 #include "matrix.hpp"
+#include "array.hpp"
 
 void matrixExperiment() {
     Matrix m1(8, 100);
@@ -19,11 +21,18 @@ void matrixExperiment() {
 }
 
 void sortExperiment() {
-    std::vector<int> array;
-    common::fill(array, 200000);
+    Array<int> a1(1000000);
+    Array<int> a2 = a1;
+    Array<int> a3 = a1;
 
-    common::measureTime([&array]{
-        common::heapSort(array);
+    std::cout << "\tST: ";
+    common::measureTime([&a1]{
+        a1.sort_single_thread();
+    });
+
+    std::cout << "\tMT: ";
+    common::measureTime([&a2]{
+        a2.sort_multi_thread();
     });
 }
 
