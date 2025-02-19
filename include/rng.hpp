@@ -10,7 +10,13 @@ public:
     ~RNG() = default;
 
     double generate();
+    double generateDouble();
+    int generateInt();
 private:
-    std::uniform_real_distribution<double> dist; // (min, max)   
-    std::mt19937 rng;
+    std::uniform_real_distribution<double> dist_double; // (min, max)   
+    std::mt19937 rng_double;
+    
+    // i guess i'll at least make a wider range
+    std::uniform_int_distribution<int> dist_int; 
+    std::mt19937 rng_int;
 };

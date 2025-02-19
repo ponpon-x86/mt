@@ -1,16 +1,33 @@
+#include <algorithm>
+#include <vector>
+
 #include "matrix.hpp"
 
-int main(int argc, char *argv[]) {
-    /*
-    Matrix m1({ { 4,3,3 }, { 8,3,3 } });
-    Matrix m2({ { 9,3 }, { 5,7 }, { 1,6.6 } });
-    */
-
+void matrixExperiment() {
     Matrix m1(8, 100);
     Matrix m2(100, 500);
+
     std::cout << "\tMT: ";
-    m1 * m2;
+    common::measureTime([&m1, &m2]{
+        m1 * m2;
+    });
+
     std::cout << "\tST: ";
-    m1.multiply_single_thread(m2);
+    common::measureTime([&m1, &m2]{
+        m1.multiply_single_thread(m2);
+    });
+}
+
+void sortExperiment() {
+    std::vector<int> array;
+    common::fill(array, 200000);
+
+    common::measureTime([&array]{
+        common::heapSort(array);
+    });
+}
+
+int main(int argc, char *argv[]) {
+    sortExperiment();
     return 0;
 }

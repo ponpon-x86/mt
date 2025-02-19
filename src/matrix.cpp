@@ -1,13 +1,7 @@
 #include "matrix.hpp"
 
 Matrix::Matrix(const unsigned rows, const unsigned columns) {
-    matrix.resize(rows);
-    for (auto& row : matrix) {
-        row.resize(columns);
-        for (auto& el : row) {
-            el = rng.generate();
-        }
-    }
+    common::fill(matrix, rows, columns);
 }
 
 Matrix::Matrix(const std::vector< std::vector<double> > m) {
@@ -84,13 +78,12 @@ const std::vector<double> Matrix::getColumn(const unsigned column) const {
 std::vector<double> Matrix::computeRow(const std::vector<double> row, const Matrix& m) const {
     std::vector<double> new_row;
     for (unsigned i = 0; i < m.columns(); ++i) {
-        new_row.push_back(addendum::dotProduct(row, m.getColumn(i)));
+        new_row.push_back(common::dotProduct(row, m.getColumn(i)));
     }
     return new_row;
 }
 
 Matrix Matrix::multiply_single_thread(const Matrix& m) {
-    auto start = std::chrono::system_clock::now();
     std::vector < std::vector<double> > result;
     if (this->columns() != m.rows()) {
         std::cout << "\tMatrix::operator* /// ok so there's this thing about matrixes,\n\t" <<
@@ -102,13 +95,11 @@ Matrix Matrix::multiply_single_thread(const Matrix& m) {
     for (auto& row : this->matrix) {
         std::vector<double> new_row;
         for (unsigned i = 0; i < m.columns(); ++i) {
-            new_row.push_back(addendum::dotProduct(row, m.getColumn(i)));
+            new_row.push_back(common::dotProduct(row, m.getColumn(i)));
         }
         result.push_back(new_row);
     }
 
-    auto end = std::chrono::system_clock::now();
-    std::cout << "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start) << "\n";
     return Matrix(result);
 }
 
@@ -117,7 +108,6 @@ Matrix Matrix::multiply_multi_thread(const Matrix& m) {
 }
 
 Matrix Matrix::operator*(const Matrix& m) {
-    auto start = std::chrono::system_clock::now();
     std::vector < std::vector<double> > result;
     if (this->columns() != m.rows()) {
         std::cout << "\tMatrix::operator* /// ok so there's this thing about matrixes,\n\t" <<
@@ -139,8 +129,6 @@ Matrix Matrix::operator*(const Matrix& m) {
         result.push_back(future.get());
     }
 
-    auto end = std::chrono::system_clock::now();
-    std::cout << "\t" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start) << "\n";
     return Matrix(result);
 }
 
