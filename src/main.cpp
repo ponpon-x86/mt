@@ -6,8 +6,8 @@
 #include "array.hpp"
 
 void matrixExperiment() {
-    Matrix m1(8, 100);
-    Matrix m2(100, 500);
+    Matrix<double> m1(8, 100);
+    Matrix<double> m2(100, 500);
 
     std::cout << "\tMT: ";
     common::measureTime([&m1, &m2]{
