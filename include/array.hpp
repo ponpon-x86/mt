@@ -29,7 +29,7 @@ public:
     }
 
     Array& operator=(const Array& other) {
-        if (this != other) {
+        if (this != &other) {
             array = other.array;
         }
         return *this;
