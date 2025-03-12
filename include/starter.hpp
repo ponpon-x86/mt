@@ -12,7 +12,7 @@ public:
 
     Starter(
         unsigned m_M,   // rows of first M
-        unsigned m_N,   // cols and rows of second M
+        unsigned m_N,   // cols of first M and rows of second M
         unsigned m_P,   // cols of second M
         unsigned a_N    // size of array
     )
@@ -25,7 +25,7 @@ public:
     matrices(std::move(other.matrices)),
     arrays(std::move(other.arrays)) {
 
-    };
+    }
 
     Starter(const Starter& other) {
         matrices = other.matrices;
@@ -33,20 +33,20 @@ public:
     }
 
     Starter& operator=(const Starter& other) {
-        if (this != other) {
+        if (this != &other) {
             matrices = other.matrices;
             arrays = other.arrays;
         }
         return *this;
-    };
+    }
 
     Starter& operator=(Starter&& other) {
         if (this != &other) {
-            matrices(std::move(other.matrices));
-            arrays(std::move(other.arrays));
+            matrices = (std::move(other.matrices));
+            arrays = (std::move(other.arrays));
         }
         return *this;
-    };
+    }
 
     void matrixExperiment();
     void arrayExperiment();
