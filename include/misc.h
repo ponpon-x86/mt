@@ -28,6 +28,18 @@ namespace common {
     }
 
     template <typename T>
+    inline void fill(std::queue<T>& queue, unsigned size) {
+        RNG rng;
+        if constexpr (std::is_floating_point<T>::value) {
+            for (unsigned i = 0; i < size; ++i)
+                queue.push(rng.generateDouble());
+        } else {
+            for (unsigned i = 0; i < size; ++i)
+                queue.push(rng.generateInt());
+        }
+    }
+
+    template <typename T>
     inline void fill(std::vector<T>& array, unsigned size) {
         RNG rng;
         if constexpr (std::is_floating_point<T>::value) {
